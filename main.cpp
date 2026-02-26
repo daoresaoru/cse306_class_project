@@ -1,23 +1,27 @@
 #include <iostream>
 #include <iomanip>
+#include <fstream>
+#include <cstdlib>
 
 using namespace std;
 
 int main() {
+    ifstream infile("customers.txt", ios::in); 
+    ofstream outfile("results.txt", ios::out);
     char option;
     cout << "Welcome to the business assissting program!\n\nPlease choose from one of the following options:\n";
     do {
-        cout << "(A)dd a customer\n(L)ook up a customer by last name\n(E)xit\n";
-        cout << "Enter your option here:";
+        cout << "1 for adding a customer\n2 for looking up a customer by last name\n3 for exiting the program\n";
+        cout << "Enter your option here: ";
         cin >> option;
-        if (option == 'A' || option == 'a') {
-            cout << "Enter the first name";
+        if (option == '1') {
+            cout << "Enter the first name: ";
         }
-        else if (option == 'L' || option == 'l') {
-            cout << "Enter the last name";
+        else if (option == '2') {
+            cout << "Enter the last name: ";
         }
-        else if (option != 'q' && option != 'Q') {
+        else if (option != '3') {
             cout << "Please, enter one of the valid options:\n"; }
-        } while (option != 'q' && option != 'Q');
+        } while (option != '3');
     return 0;
 }
