@@ -1,0 +1,14 @@
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <cstdlib>
+#include <customer>
+
+using namespace std;
+
+class LinkedList {
+    private:
+        Customer first;
+    public:
+        
+};
