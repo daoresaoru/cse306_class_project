@@ -6,11 +6,12 @@ using namespace std;
 
 class Customer {
     private: 
-        int ID;
+        string ID;
         string first_name;
         string last_name;
         string address;
         string city;
         string state;
-        int zip;
+        string zip;
+
 };
