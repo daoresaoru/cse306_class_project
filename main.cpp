@@ -2,11 +2,12 @@
 #include <iomanip>
 #include <fstream>
 #include <cstdlib>
+#include <sstream>
 
 using namespace std;
 
 int main() {
-    ifstream infile("customers.txt", ios::in); 
+    ifstream infile("customers.txt", ios::in);
     ofstream outfile("results.txt", ios::out);
     char option;
     cout << "Welcome to the business assissting program!\n\nPlease choose from one of the following options:\n";
@@ -24,4 +25,5 @@ int main() {
             cout << "Please, enter one of the valid options:\n"; }
         } while (option != '3');
     return 0;
+
 }
