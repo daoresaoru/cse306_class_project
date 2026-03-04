@@ -10,31 +10,59 @@ using namespace std;
 int main() {
     ifstream infile("customers.txt", ios::in); 
     ofstream outfile("results.txt", ios::out);
-    char option;
+    char option, sub_option;
     string last_name, line;
-    Customer customer;
+    //Customer customer;
     cout << "Welcome to the business assissting program!\n\nPlease choose from one of the following options:\n";
     do {
-        cout << "1 for adding a customer\n2 for looking up a customer by last name\n3 for exiting the program\n";
+        cout << "1 for adding a customer\n2 for looking up a customer by last name\n3 for placing an order\n";
+        cout << "4 for Rainbow Tribbles\n5 for exiting the program\n";
         cout << "Enter your option here: ";
         cin >> option;
-        if (option == '1') {
-            customer.input(); //the function that inputs customer info, can be renamed
-            customer.writeToFile(outfile); //the function that writes the info to the customer.txt, can be renamed
-            outfile.flush();
-        }
-        else if (option == '2') {
-            cout << "Enter the last name: ";
-            cin >> last_name;
-            while (getline(infile, line)) {
-                if (line.find(last_name) != string::npos) {
-                    cout << line << endl;
+        switch(option)
+        {
+            case '1':
+                //customer.input(); //the function that inputs customer info, can be renamed
+                //customer.writeToFile(outfile); //the function that writes the info to the customer.txt, can be renamed
+                //outfile.flush();
+                cout << "well duh\n";
+                break;
+            case '2':
+                cout << "Enter the last name: ";
+                cin >> last_name;
+                while (getline(infile, line)) {
+                    if (line.find(last_name) != string::npos) {
+                        cout << line << endl;
 
+                    }
                 }
-            }
-        }
-        else if (option != '3') {
-            cout << "Please, enter one of the valid options:\n"; }
-        } while (option != '3');
+                break;
+            case '3':
+                cout << "Please enter your customer ID and a quantity of tribbles you want to buy:\n";
+                cout << "1 tribble - $9.50;\n2 tribbles - $16.15;\n3 tribbles - $25.88;\n4 tribbles - $28.15;\n5 tribbles - $30.00.\n";
+                //cin >> order.id >> number;
+                break;
+            case '4':
+                do {
+                cout << "Please choose what you want to do with a Rainbow Tribble:\n";
+                cout << "1 for adding a person;\n2 for selling a Rainbow Tribble to the next person\n";
+                cin >> sub_option;
+                switch(sub_option) {
+                    case '1':
+                        cout << "Please enter your customer ID and a quantity of tribbles you want to buy:\n";
+                        
+                    case '2':
+                        //rainbow.remove();
+                        
+                    default:
+                        cout << "Please, enter one of the valid options:\n";
+                } } while (sub_option != '1' && sub_option != '2');
+                break;
+            case '5':
+                return 0;
+            default:
+                cout << "Please, enter one of the valid options:\n";
+        } } while (true);
     return 0;
 }
+
