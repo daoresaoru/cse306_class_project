@@ -4,14 +4,23 @@
 #include <cstdlib>
 #include <string>
 #include <cstring>
+#include <vector>
+#include <map>
+#include "transaction.h"
+#include "order.h"
+vector<Order> orders;
+map<int, Transaction> transactions;
 /*#include "customer.h"*/
 using namespace std;
 
 int main() {
     ifstream infile("customers.txt", ios::in); 
+    ifstream infile("orders.txt", ios::in);
     ofstream outfile("results.txt", ios::out);
     char option, sub_option;
     string last_name, line;
+    int cID, quantity, oID;
+    double price;
     //Customer customer;
     cout << "Welcome to the business assissting program!\n\nPlease choose from one of the following options:\n";
     do {
@@ -40,7 +49,32 @@ int main() {
             case '3':
                 cout << "Please enter your customer ID and a quantity of tribbles you want to buy:\n";
                 cout << "1 tribble - $9.50;\n2 tribbles - $16.15;\n3 tribbles - $25.88;\n4 tribbles - $28.15;\n5 tribbles - $30.00.\n";
-                //cin >> order.id >> number;
+                cin >> cID;
+                cin >> quantity;
+                switch (quantity)
+                {
+                case 1:
+                    price = 9.5;
+                    break;
+                case 2:
+                    price = 16.15;
+                    break;
+                case 3:
+                    price = 25.88;
+                    break;
+                case 4:
+                    price = 28.15;
+                    break;
+                case 5:
+                    price = 30;
+                    break;
+                default:
+                    cout << "Please enter a number between 1 and 5";
+                    break;
+                }
+                cout << cID << " | " << quantity << " tribble(s) " << " $" << price;
+                orders.push_back(Order(oID, cID, quantity, price));
+                transactions[oID] = Transaction(cID, oID);
                 break;
             case '4':
                 do {
@@ -65,4 +99,3 @@ int main() {
         } } while (true);
     return 0;
 }
-
