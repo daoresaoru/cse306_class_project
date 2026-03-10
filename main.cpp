@@ -6,22 +6,77 @@
 #include <cstring>
 #include <vector>
 #include <map>
+#include <sstream>
 #include "transaction.h"
 #include "order.h"
+
+using namespace std;
 vector<Order> orders;
 map<int, Transaction> transactions;
 /*#include "customer.h"*/
-using namespace std;
+
 
 int main() {
     ifstream infile("customers.txt", ios::in); 
-    ifstream infile("orders.txt", ios::in);
+    ifstream orders_file("orders.txt", ios::in);
+    ifstream transactions_file("orders.txt", ios::in);
     ofstream outfile("results.txt", ios::out);
     char option, sub_option;
-    string last_name, line;
+    string last_name, line_orders, line_transactions, line, word, date;
     int cID, quantity, oID;
     double price;
     //Customer customer;
+
+    while(getline(transactions_file, line_transactions)) {
+        stringstream ss(line_transactions);
+        for (int i=0; getline(ss, word, ';'); i++) //breaking down the string; loops until string ends
+            {
+                
+                switch (i) //goes through every part of the line
+                {
+                case 0:
+                    cID = stoi(word);
+                    break;
+                case 1:
+                    oID = stoi(word); //stoi() function turns string into int
+                    break;
+                } 
+            }
+            transactions[oID] = Transaction(cID, oID);
+    }
+
+
+
+
+    while (getline(orders_file, line_orders)) {
+        stringstream ss(line_orders);
+        for (int i=0; getline(ss, word, ';'); i++) //breaking down the string; loops until string ends
+            {
+                
+                switch (i) //goes through every part of the line
+                {
+                case 0:
+                    oID = stoi(word);
+                    break;
+                case 1:
+                    date = word; //stoi() function turns string into int
+                    break;
+                case 2:
+                    quantity = stoi(word);
+                    break;
+                case 3:
+                    price = stod(word);
+                    break;
+                
+                } 
+                cID = transactions[oID].getcustomerID();
+            }
+            orders.push_back(Order(oID, cID, quantity, price));
+    }
+
+
+
+
     cout << "Welcome to the business assissting program!\n\nPlease choose from one of the following options:\n";
     do {
         cout << "1 for adding a customer\n2 for looking up a customer by last name\n3 for placing an order\n";
@@ -49,8 +104,7 @@ int main() {
             case '3':
                 cout << "Please enter your customer ID and a quantity of tribbles you want to buy:\n";
                 cout << "1 tribble - $9.50;\n2 tribbles - $16.15;\n3 tribbles - $25.88;\n4 tribbles - $28.15;\n5 tribbles - $30.00.\n";
-                cin >> cID;
-                cin >> quantity;
+                cin >> cID >> quantity;
                 switch (quantity)
                 {
                 case 1:
@@ -72,7 +126,7 @@ int main() {
                     cout << "Please enter a number between 1 and 5";
                     break;
                 }
-                cout << cID << " | " << quantity << " tribble(s) " << " $" << price;
+                cout << cID << " | " << quantity << " tribble(s) |" << " $" << price << "\n";
                 orders.push_back(Order(oID, cID, quantity, price));
                 transactions[oID] = Transaction(cID, oID);
                 break;
