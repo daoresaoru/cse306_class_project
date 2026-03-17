@@ -5,7 +5,7 @@
 using namespace std;
 
 class Customer {
-    private: 
+    private:
         string ID;
         string first_name;
         string last_name;
@@ -13,5 +13,14 @@ class Customer {
         string city;
         string state;
         string zip;
-
+    public:
+        string getID();
+        string getFirstName();
+        string getLastName();
+        string getAddress();
+        string getCity();
+        string getState();
+        string getZIP();
+        void print();
+        
 };
