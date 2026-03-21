@@ -1,22 +1,24 @@
 #ifndef TRANSACTION_H
 #define TRANSACTION_H
 
+using namespace std;
+
 class Transaction {
     private:
-        int customerID, orderID;
+        string customerID, orderID;
     public:
         Transaction() {
-            customerID = 0;
-            orderID = 0;
+            customerID = "";
+            orderID = "";
         }
-        Transaction(int cID, int oID) {
+        Transaction(string cID, string oID) {
             customerID = cID;
             orderID = oID;
         }
-        int getcustomerID() {
+        string getcustomerID() {
             return customerID;
         }
-        int getorderID(){
+        string getorderID(){
             return orderID;
         }
 };
