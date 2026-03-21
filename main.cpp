@@ -89,7 +89,35 @@ int main() {
                 //customer.input(); //the function that inputs customer info, can be renamed
                 //customer.writeToFile(outfile); //the function that writes the info to the customer.txt, can be renamed
                 //outfile.flush();
-                cout << "well duh\n";
+            	string first, last, id, address, city, state, zip;
+                cout << "Enter the first name of the customer: ";
+                cin >> first;
+                cout << "Enter the last name of the customer: ";
+                cin >> last;
+                cout << "Enter the ID of the customer: ";
+                cin >> id;
+                cout << "Enter the address of the customer: ";
+                cin >> address;
+                cout << "Enter the city the customer lives in: ";
+                cin >> city;
+                cout << "Enter the state the customer lives in: ";
+                cin >> state;
+                cout << "Enter the ZIP code of the customer: ";
+                cin >> zip;
+
+                new Customer(id, first, last, address, city, state, zip);
+                //Need to add customer to whatever we're storing them in
+                cout << first << " " << last << " has been added.";
+                break;
+            case '2':
+                cout << "Enter the last name: ";
+                cin >> last_name;
+                while (getline(infile, line)) {
+                    if (line.find(last_name) != string::npos) {
+                        cout << line << endl;
+
+                    }
+                }
                 break;
             case '2':
                 cout << "Enter the last name: ";
