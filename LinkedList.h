@@ -1,9 +1,37 @@
-#include <customer.cpp>
+#ifndef LINKEDLIST_H
+#define LINKEDLIST_H
+
+#include <customer.h>
 #include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <cstdlib>
 
-namespace std {
+using namespace std;
 
-class CustomerList{
+class LinkedList {
+    private:
+        Customer first;
+    public:
+        
+
+ };
+ 
+ class CustomerList::Node{
+	private:
+		Customer data;
+		Node next;
+
+	public:
+		Node(Customer hold){
+			data = hold;
+		}
+		Customer getData(){
+			return data;
+		}
+};
+ 
+ class CustomerList{
 	private:
 		class Node;
 		Node first;
@@ -17,24 +45,15 @@ class CustomerList{
 		Node at(int);
 		void removeCustomer(Customer);
 };
+ 
+ 
+
 
 CustomerList::CustomerList(){
 	size = 0;
 }
 
-class CustomerList::Node{
-	private:
-		Customer data;
-		Node next;
 
-	public:
-		Node(Customer hold){
-			data = hold;
-		}
-		Customer getData(){
-			return data;
-		}
-};
 
 void CustomerList::addCustomer(Customer add){
 	Node n(add);
@@ -81,3 +100,5 @@ void CustomerList::removeCustomer(Customer remove){
 	}
 }
 }
+
+#endif
