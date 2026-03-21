@@ -3,25 +3,26 @@
 
 class Order {
     private:
-        int customerID, orderID, quantity;
+        string customerID, orderID;
+        int quantity;
         double price;
     public: 
         Order() {
-            customerID = 0;
-            orderID = 0;
+            customerID = "";
+            orderID = "";
             quantity = 0;
             price = 0;
         }
-        Order(int cID, int oID, int qty, double p) {
+        Order(string cID, string oID, int qty, double p) {
             customerID = cID;
             orderID = oID;
             quantity = qty;
             price = p;
         }
-        int getcustomerID() {
+        string getcustomerID() {
             return customerID;
         }
-        int getorderID(){
+        string getorderID(){
             return orderID;
         }
         int getquantity() {
