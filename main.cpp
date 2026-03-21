@@ -77,10 +77,10 @@ int main() {
 
 
 
-    cout << "Welcome to the business assissting program!\n\nPlease choose from one of the following options:\n";
+    cout << "Welcome to the business assisting program!\n\nPlease choose from one of the following options:\n";
     do {
         cout << "1 for adding a customer\n2 for looking up a customer by last name\n3 for placing an order\n";
-        cout << "4 for Rainbow Tribbles\n5 for exiting the program\n";
+        cout << "4 for ordering Rainbow Tribbles\n5 for exiting the program\n";
         cout << "Enter your option here: ";
         cin >> option;
         switch(option)
