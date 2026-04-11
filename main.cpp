@@ -25,7 +25,12 @@ int main() {
     ifstream infile("customers.txt", ios::in); 
     ifstream orders_file("orders.txt", ios::in);
     ifstream transactions_file("transactions.txt", ios::in);
-    ifstream rainbow_file("rainbowList.txt", ios::in); 
+    ifstream rainbow_file("rainbowList.txt", ios::in);
+    ofstream customer("customers.txt", std::ios::app);
+    ofstream order("orders.txt", std::ios::app);
+    ofstream transaction("transactions.txt", std::ios::app);
+    ofstream rainbow("rainbowList.txt", std::ios::app);
+
     char option, sub_option; //these are for menu and Rainbow Tribble sub-menu
     string last_name; //used for searching by last name 
     string cID, oID; //customerID and orderID
@@ -145,7 +150,14 @@ int main() {
                 cout << "Enter the ZIP code of the customer: ";
                 cin >> zip;
 
-                customers.push_back(Customer(id, first, last, address, city, state, zip)); //adds a new Customer object to a vector
+                customers.push_back(Customer(id, first, last, address, city, state, zip));
+                
+                
+                    customer << "\n" << customers[customers.size()-1].getID() << ";" << customers[customers.size()-1].getFirstName() << ";" 
+                    << customers[customers.size()-1].getLastName() << ";" << customers[customers.size()-1].getAddress() << ";" 
+                    << customers[customers.size()-1].getCity() << ";" << customers[customers.size()-1].getState() << ";"
+                    << customers[customers.size()-1].getZIP();
+                customer.close(); //adds a new Customer object to a vector
                 cout << first << " " << last << " has been added.\n";
                 break;
             case '2':
@@ -187,7 +199,12 @@ int main() {
                 }
                 cout << cID << " | " << quantity << " tribble(s) |" << " $" << price << "\n";
                 orders.push_back(Order(oID, cID, quantity, price)); //adds a new Order object to a vector
+                order << "\n" << orders[orders.size() - 1].getorderID() << ";" << orders[orders.size() - 1].getcustomerID() << ";" 
+                << orders[orders.size() - 1].getquantity() << ";" << orders[orders.size() - 1].getprice();
+                order.close();
                 transactions[oID] = Transaction(cID, oID); //add a bew Transaction object to a map
+                transaction << "\n" << transactions[oID].getcustomerID() << ";" << transactions[oID].getorderID();
+                transaction.close(); 
                 break;
             case '4':
                 do {
@@ -199,9 +216,11 @@ int main() {
                         cout << "Please enter the customer ID:\n";
                         cin >> id;
                         rainbows.push_back(Rainbow(id)); //adds a new Rainbow object to a vector
+                        rainbow << rainbows[rainbows.size() - 1].getID();
+                        rainbow.close();
                         break;
                         
-                    case '2':
+                    case '2': {
                     cout << "Please enter your customer ID: ";
                         cin >> id;
                         for (int i=0; i<rainbows.size(); i++) {
@@ -209,9 +228,17 @@ int main() {
                                 rainbows.erase(rainbows.begin() + i);
                                 break;
                             }
+                        for (int i=0; i<rainbows.size(); i++) {
+                            cout << "\n" << rainbows[i].getID() << endl;
+                        }
                             
                         }
-                        break;
+                        ofstream rainbow_two("rainbowList.txt");
+                        for (int i=0; i<rainbows.size(); i++) {
+                            rainbow_two << rainbows[i].getID() << endl;
+                        }
+                        rainbow_two.close();
+                        break; }
                         
                         
                         
@@ -226,4 +253,5 @@ int main() {
                 cout << "Please, enter one of the valid options:\n"; //validation
         } } while (true);
     return 0;
+}
 }
