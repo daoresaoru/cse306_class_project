@@ -78,6 +78,23 @@ class Customer {
             cout << ID << "; " << first_name << "; " << last_name << "; " << address << "; " << city << "; " << state << "; " << zip << endl;
         }
 
+        string write(){
+            string text = ID;
+            text.append(";");
+            text.append(first_name);
+            text.append(";");
+            text.append(last_name);
+            text.append(";");
+            text.append(address);
+            text.append(";");
+            text.append(city);
+            text.append(";");
+            text.append(state);
+            text.append(";");
+            text.append(zip);
+            return text;
+        }
+
 };
 
 
