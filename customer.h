@@ -74,6 +74,10 @@ class Customer {
             return zip;
         }
 
+        void print(){
+            cout << ID << "; " << first_name << "; " << last_name << "; " << address << "; " << city << "; " << state << "; " << zip << endl;
+        }
+
 };
 
 
