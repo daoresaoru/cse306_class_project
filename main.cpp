@@ -135,6 +135,7 @@ int main() {
         cout << "4 for managing Rainbow Tribble orders\n5 for exiting the program\n";
         cout << "Enter your option here: ";
         cin >> option;
+        cout << endl;
         switch(option)
         {
             case '1':
@@ -160,17 +161,14 @@ int main() {
                 customers.push_back(Customer(id, first, last, address, city, state, zip));
                 
                 
-                    customer << "\n" << customers[customers.size()-1].getID() << ";" << customers[customers.size()-1].getFirstName() << ";" 
-                    << customers[customers.size()-1].getLastName() << ";" << customers[customers.size()-1].getAddress() << ";" 
-                    << customers[customers.size()-1].getCity() << ";" << customers[customers.size()-1].getState() << ";"
-                    << customers[customers.size()-1].getZIP();
+                customer << "\n" << customers[customers.size()-1].write();
                 customer.close(); //adds a new Customer object to a vector
                 cout << first << " " << last << " has been added.\n";
                 break;
             case '2':
                 int searchChoice;
                 do{
-                    cout << "Enter 1 to search by last name, 2 to search by ID or 3 to go back: ";
+                    cout << "Enter 1 to search by last name, 2 to search by ID or 0 to go back: ";
                     cin >> searchChoice;
                     if (searchChoice == 1){
                         cout << "Enter the last name: ";
@@ -208,20 +206,20 @@ int main() {
                             }
                         }
                     }
-                    else if (searchChoice != 3){
+                    else if (searchChoice != 0){
                         cout << "Invalid entry\n";
                     }
-                } while (searchChoice != 1 && searchChoice != 2 && searchChoice != 3);
+                } while (searchChoice != 1 && searchChoice != 2 && searchChoice != 0);
                 searchList.clear();
                 break;
             
             case '3':
                 do{
-                    cout << "Please enter your customer ID followed by the quantity of tribbles you want to buy:\n";
+                    cout << "Please enter the customer ID followed by the quantity of tribbles you want to buy:\n";
                     cout << "1 tribble - $9.50;\n2 tribbles - $16.15;\n3 tribbles - $25.88;\n4 tribbles - $28.15;\n5 tribbles - $30.00;\n"
                     << "0 to go back.\n";
                     cin >> cID >> quantity;
-                    if (!existsID(cID)){
+                    if (!existsID(cID) && quantity != 0){
                         cout << "ID not found.\n";
                     }
                     if (quantity < 0 || quantity > 5){
@@ -265,7 +263,7 @@ int main() {
             case '4':
                 do {
                 cout << "Please choose what you want to do with a Rainbow Tribble:\n";
-                cout << "1 for adding a person;\n2 for selling a Rainbow Tribble to the next person\n";
+                cout << "1 for adding a person;\n2 for selling a Rainbow Tribble to the next person\n0 to go back\n";
                 cin >> sub_option;
                 Customer tempCustomer;
                 switch(sub_option) {
@@ -297,19 +295,21 @@ int main() {
                         rainbow_two.close();
                         rainbows.pop(); //removes customer sold to from the queue
                         break; }
-                        
-                        
+                    case '0':
+                        break;
                         
                         
                     default:
                         cout << "Invalid entry"; //validation
-                } } while (sub_option != '1' && sub_option != '2');
+                } } while (sub_option != '1' && sub_option != '2' && sub_option != '0');
                 break;
             case '5':
                 return 0;
             default:
                 cout << "Please, enter one of the valid options:\n"; //validation
-        } } while (true);
+        }
+        cout << endl;
+        } while (true);
     return 0;
 }
 
