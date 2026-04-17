@@ -19,10 +19,10 @@ vector<Order> orders;
 vector<Customer> customers;
 vector<Customer> searchList; // used for creating a menu of search results
 map<string, Transaction> transactions;
-queue<Rainbow> rainbows;
+vector<Rainbow> rainbows;
 
 bool existsID(string search); //function to check if an ID already exists
-Customer withID(string search); //function that returns the customer with a given ID
+
 
 int main() {
     ifstream infile("customers.txt", ios::in); 
@@ -122,7 +122,7 @@ int main() {
 
     while(getline(rainbow_file, line_rainbow)) {
             id = line_rainbow;
-            rainbows.push(Rainbow(id));
+            rainbows.push_back(Rainbow(id));
         }    
         
 
@@ -221,6 +221,7 @@ int main() {
                     cin >> cID >> quantity;
                     if (!existsID(cID) && quantity != 0){
                         cout << "ID not found.\n";
+                        break;
                     }
                     if (quantity < 0 || quantity > 5){
                         cout << "Please enter a quantity of tribbles from 0 to 5";
@@ -263,44 +264,42 @@ int main() {
             case '4':
                 do {
                 cout << "Please choose what you want to do with a Rainbow Tribble:\n";
-                cout << "1 for adding a person;\n2 for selling a Rainbow Tribble to the next person\n0 to go back\n";
+                cout << "1 for adding a person;\n2 for selling a Rainbow Tribble to the next person\n";
                 cin >> sub_option;
-                Customer tempCustomer;
                 switch(sub_option) {
                     case '1':
-                        do{
-                            cout << "Please enter the customer ID:\n";
-                            cin >> id;
-                            if (existsID(id)){
-                                rainbows.push(Rainbow(id)); //adds a new Rainbow object to the Rainbow queue
-                                rainbow << rainbows.front().getID();
-                                rainbow.close();
-                            }
-                        } while (!existsID(id));
-                        tempCustomer = withID(id);
-                        cout << "Rainbow Tribble order placed for " << tempCustomer.getFirstName() << " " << tempCustomer.getLastName() << ".\n";
+                        cout << "Please enter the customer ID:\n";
+                        cin >> id;
+                        rainbows.push_back(Rainbow(id)); //adds a new Rainbow object to a vector
+                        rainbow << rainbows[rainbows.size() - 1].getID();
+                        rainbow.close();
                         break;
                         
                     case '2': {
-                        id = rainbows.front().getID();
-                        tempCustomer = withID(id);
-                        cout << "Rainbow Tribble sold to " << tempCustomer.getFirstName() << " " << tempCustomer.getLastName() << ".\n";
-                        //tells user that the next person in the queue was sold a Rainbow tribble
+                    cout << "Please enter your customer ID: ";
+                        cin >> id;
+                        for (int i=0; i<rainbows.size(); i++) {
+                            if (rainbows[i].getID() == id) { //gets rid of a Rainbow object based on the inputted ID
+                                rainbows.erase(rainbows.begin() + i);
+                                break;
+                            }
+                        for (int i=0; i<rainbows.size(); i++) {
+                            cout << "\n" << rainbows[i].getID() << endl;
+                        }
+                            
+                        }
                         ofstream rainbow_two("rainbowList.txt");
                         for (int i=0; i<rainbows.size(); i++) {
-                            queue<Rainbow> tempQueue = rainbows;
-                            rainbow_two << tempQueue.front().getID() << endl;
-                            tempQueue.pop();
+                            rainbow_two << rainbows[i].getID() << endl;
                         }
                         rainbow_two.close();
-                        rainbows.pop(); //removes customer sold to from the queue
                         break; }
-                    case '0':
-                        break;
+                        
+                        
                         
                         
                     default:
-                        cout << "Invalid entry"; //validation
+                        cout << "Please, enter one of the valid options:\n"; //validation
                 } } while (sub_option != '1' && sub_option != '2' && sub_option != '0');
                 break;
             case '5':
@@ -323,10 +322,3 @@ bool existsID(string search){
     return false;
 }
 
-Customer withID(string search){
-    for (int i = 0; i < customers.size(); i++){
-        if (customers[i].getID().compare(search) == 0){
-            return customers[i];
-        }
-    }
-}
