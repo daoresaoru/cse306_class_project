@@ -7,33 +7,96 @@
 #include <vector>
 #include <map>
 #include <sstream>
+#include <queue>
 #include "transaction.h"
 #include "order.h"
 #include "customer.h"
 #include "rainbow.h"
-
+#include "salesperson.h"
 using namespace std;
 
 vector<Order> orders;
 vector<Customer> customers;
+vector<Customer> searchList; // used for creating a menu of search results
 map<string, Transaction> transactions;
 vector<Rainbow> rainbows;
-
+vector<Employee*> employees;
+bool existsID(string search); //function to check if an ID already exists
 
 
 int main() {
     ifstream infile("customers.txt", ios::in); 
     ifstream orders_file("orders.txt", ios::in);
     ifstream transactions_file("transactions.txt", ios::in);
-    ifstream rainbow_file("rainbowList.txt", ios::in); 
+    ifstream rainbow_file("rainbowList.txt", ios::in);
+    ifstream sales_file("salesStaff.txt", ios::in);
+    ifstream sales_output("sales_report.txt");
+    ofstream customer("customers.txt", std::ios::app);
+    ofstream order("orders.txt", std::ios::app);
+    ofstream transaction("transactions.txt", std::ios::app);
+    ofstream rainbow("rainbowList.txt", std::ios::app);
+    ofstream sales_report("sales_report.txt");
+
     char option, sub_option; //these are for menu and Rainbow Tribble sub-menu
     string last_name; //used for searching by last name 
+    string search_id; // used for searching by ID
     string cID, oID; //customerID and orderID
-    string line_orders, line_transactions, line_customers, line_rainbow; //strings used for reading from files
+    string line_orders, line_transactions, line_customers, line_rainbow, line_sales, line; //strings used for reading from files
     string word, date; //other strings
     string first, last, id, address, city, state, zip; //variables used for customer class
-    int quantity; 
+    string status, name;
+    int quantity, eID, bID; 
     double price; 
+
+    sales_report << fixed << setprecision(2);
+    while (getline(sales_file, line_sales))
+    {
+        stringstream ss(line_sales);
+        for (int i = 0; getline(ss, word, ';'); i++) {
+            switch (i)
+            {
+            case 0:
+                status = word;
+                break;
+            case 1:
+                name = word;
+                break;
+            case 2:
+                eID = stoi(word);
+                break;
+            case 3:
+                bID = stoi(word);
+                break;
+            
+            
+            }
+
+            
+            
+        }
+
+        if (status == "Sales") {
+            employees.push_back(new Sales(name, eID, bID));
+            }
+            else if (status == "SuperSales") {
+                employees.push_back(new SuperSales(name, eID, bID));
+            }
+            else if (status == "Supervisor") {
+                employees.push_back(new Supervisor(name, eID, bID));
+            }
+            else {
+                employees.push_back(new Manager(name, eID, bID));
+            }
+        
+
+        
+    }
+
+    
+
+
+
+
 
     while(getline(infile, line_customers)) { //read from txt files and store into data structures
         stringstream ss(line_customers);
@@ -75,11 +138,14 @@ int main() {
                     cID = word;
                     break;
                 case 1:
+                    eID = stoi(word); 
+                    break;
+                case 2:
                     oID = word; 
                     break;
                 } 
             }
-            transactions[oID] = Transaction(cID, oID); //creates transactions read from file
+            transactions[oID] = Transaction(cID, oID, eID); //creates transactions read from file
     }
 
 
@@ -106,10 +172,30 @@ int main() {
                     break;
                 
                 } 
-                cID = transactions[oID].getcustomerID();
+                
             }
+                cID = transactions[oID].getcustomerID();
+                eID = transactions[oID].getemployeeID();
+                for (int i = 0; i < employees.size(); i++) {
+                    if (eID == employees[i]->geteID()) {
+                        employees[i]->addIncome(price);
+                        employees[i]->addSales(quantity);
+                        break;
+                    }
+                }
+                
             orders.push_back(Order(oID, cID, quantity, price));
     }
+
+    for (int i = 0; i < employees.size(); i++) {
+                    bID = employees[i]->getbID();
+                    for (int j = 0; j < employees.size(); j++) {
+                        if (employees[j]->geteID() == bID) {
+                            employees[j]->addSubCommission(employees[i]->getIncome() * 0.03);
+                            break;
+                        }
+                    }
+                }
 
     while(getline(rainbow_file, line_rainbow)) {
             id = line_rainbow;
@@ -117,20 +203,31 @@ int main() {
         }    
         
 
+    for (int i = 0; i < employees.size(); i++) {
+        sales_report << employees[i]->getName() << ";" << employees[i]->getSales() << ";" << employees[i]->getCommission() << endl;
+    }
+    sales_report.close();
+    
+     
+    
 
 
 
     cout << "Welcome to the business assisting program!\n\nPlease choose from one of the following options:\n";
     do {
         cout << "1 for adding a customer\n2 for looking up a customer by last name\n3 for placing an order\n";
-        cout << "4 for ordering Rainbow Tribbles\n5 for exiting the program\n";
+        cout << "4 for managing Rainbow Tribble orders\n5 for outputting the sales report\n6 for exiting the program\n";
         cout << "Enter your option here: ";
         cin >> option;
+        cout << endl;
         switch(option)
         {
             case '1':
-                cout << "Enter the ID of the customer: ";
-                cin >> id;
+                do {id = to_string(rand()%1000000);
+                    while (id.length() < 6){
+                        id = id.insert(0, "0");
+                    }
+                } while (existsID(id));
                 cout << "Enter the first name of the customer: ";
                 cin >> first;
                 cout << "Enter the last name of the customer: ";
@@ -145,27 +242,79 @@ int main() {
                 cout << "Enter the ZIP code of the customer: ";
                 cin >> zip;
 
-                customers.push_back(Customer(id, first, last, address, city, state, zip)); //adds a new Customer object to a vector
+                customers.push_back(Customer(id, first, last, address, city, state, zip));
+                
+                
+                customer << "\n" << customers[customers.size()-1].write();
+                customer.close(); //adds a new Customer object to a vector
                 cout << first << " " << last << " has been added.\n";
                 break;
             case '2':
-                cout << "Enter the last name: ";
-                cin >> last_name;
-                for (int i = 0; i<customers.size(); i++) {
-                    if (last_name == customers[i].getLastName()) { //looks for a last name
-                        cout << customers[i].getID() << ";" << customers[i].getFirstName() << ";" << customers[i].getLastName() << ";"
-                         << customers[i].getAddress() << ";" << customers[i].getCity() << ";" << customers[i].getState() << ";" 
-                         << customers[i].getZIP() << endl; //output all instances with a last name
+                int searchChoice;
+                do{
+                    cout << "Enter 1 to search by last name, 2 to search by ID or 0 to go back: ";
+                    cin >> searchChoice;
+                    if (searchChoice == 1){
+                        cout << "Enter the last name: ";
+                        cin >> last_name;
+                        for (int i = 0; i<customers.size(); i++) {
+                            if (last_name == customers[i].getLastName()) { //looks for a last name
+                                searchList.push_back(customers[i]);
+                            }
+                        }
+                        if (searchList.size() == 0){
+                            cout << "No customers with last name " << last_name << " found.\n";
+                        }
+                        else if (searchList.size() == 1){
+                            searchList[0].print(); //output customer with last name
+                        }
+                        else{
+                            int listPosition;
+                            cout << "Select from the following list of customers: \n";
+                            for (int i = 0; i < searchList.size(); i++){
+                                cout << (i + 1) << ". " << searchList[i].getFirstName() << " " << searchList[i].getLastName() << endl;
+                            }
+                            cin >> listPosition;
+                            searchList[listPosition - 1].print(); //output chosen customer
+                        }
                     }
-                }
+                    else if (searchChoice == 2){
+                        cout << "Enter the ID: ";
+                        cin >> search_id;
+                        for (int i = 0; i < customers.size(); i++){
+                            if (customers[i].getID() == search_id){
+                            customers[i].print(); //output customer with ID if found
+                            }
+                            else if (i == customers.size() - 1){
+                                cout<< "Customer with ID " << search_id << " not found.\n";
+                            }
+                        }
+                    }
+                    else if (searchChoice != 0){
+                        cout << "Invalid entry\n";
+                    }
+                } while (searchChoice != 1 && searchChoice != 2 && searchChoice != 0);
+                searchList.clear();
                 break;
             
             case '3':
-                cout << "Please enter your customer ID and a quantity of tribbles you want to buy:\n";
-                cout << "1 tribble - $9.50;\n2 tribbles - $16.15;\n3 tribbles - $25.88;\n4 tribbles - $28.15;\n5 tribbles - $30.00.\n";
-                cin >> cID >> quantity;
+                do{
+                    cout << "Please enter the customer ID followed by the quantity of tribbles you want to buy:\n";
+                    cout << "1 tribble - $9.50;\n2 tribbles - $16.15;\n3 tribbles - $25.88;\n4 tribbles - $28.15;\n5 tribbles - $30.00;\n"
+                    << "0 to go back.\n";
+                    cin >> cID >> quantity;
+                    if (!existsID(cID) && quantity != 0){
+                        cout << "ID not found.\n";
+                        break;
+                    }
+                    if (quantity < 0 || quantity > 5){
+                        cout << "Please enter a quantity of tribbles from 0 to 5";
+                    }
+                } while (quantity != 0 && !existsID(cID) && (quantity < 0 || quantity > 5));
                 switch (quantity)
                 {
+                case 0:
+                    break;
                 case 1:
                     price = 9.5;
                     break;
@@ -182,12 +331,19 @@ int main() {
                     price = 30;
                     break;
                 default:
-                    cout << "Please enter a number between 1 and 5";
+                    cout << "Please enter a number from 0 to 5";
                     break;
                 }
-                cout << cID << " | " << quantity << " tribble(s) |" << " $" << price << "\n";
-                orders.push_back(Order(oID, cID, quantity, price)); //adds a new Order object to a vector
-                transactions[oID] = Transaction(cID, oID); //add a bew Transaction object to a map
+                if (quantity != 0){
+                    cout << cID << " | " << quantity << " tribble(s) |" << " $" << price << "\n";
+                    orders.push_back(Order(oID, cID, quantity, price)); //adds a new Order object to a vector
+                    order << "\n" << orders[orders.size() - 1].getorderID() << ";" << orders[orders.size() - 1].getcustomerID() << ";" 
+                    << orders[orders.size() - 1].getquantity() << ";" << orders[orders.size() - 1].getprice();
+                    order.close();
+                    transactions[oID] = Transaction(cID, oID, eID); //add a new Transaction object to a map
+                    transaction << "\n" << transactions[oID].getcustomerID() << ";" << transactions[oID].getorderID();
+                    transaction.close(); 
+                }
                 break;
             case '4':
                 do {
@@ -199,9 +355,11 @@ int main() {
                         cout << "Please enter the customer ID:\n";
                         cin >> id;
                         rainbows.push_back(Rainbow(id)); //adds a new Rainbow object to a vector
+                        rainbow << rainbows[rainbows.size() - 1].getID();
+                        rainbow.close();
                         break;
                         
-                    case '2':
+                    case '2': {
                     cout << "Please enter your customer ID: ";
                         cin >> id;
                         for (int i=0; i<rainbows.size(); i++) {
@@ -209,21 +367,47 @@ int main() {
                                 rainbows.erase(rainbows.begin() + i);
                                 break;
                             }
+                        for (int i=0; i<rainbows.size(); i++) {
+                            cout << "\n" << rainbows[i].getID() << endl;
+                        }
                             
                         }
-                        break;
+                        ofstream rainbow_two("rainbowList.txt");
+                        for (int i=0; i<rainbows.size(); i++) {
+                            rainbow_two << rainbows[i].getID() << endl;
+                        }
+                        rainbow_two.close();
+                        break; }
                         
                         
                         
                         
                     default:
                         cout << "Please, enter one of the valid options:\n"; //validation
-                } } while (sub_option != '1' && sub_option != '2');
+                } } while (sub_option != '1' && sub_option != '2' && sub_option != '0');
                 break;
             case '5':
+                while (getline(sales_output, line)) {
+                    cout << line << endl;
+                }
+                sales_output.close();
+            case '6':
                 return 0;
             default:
                 cout << "Please, enter one of the valid options:\n"; //validation
-        } } while (true);
+        }
+        cout << endl;
+        } while (true);
     return 0;
 }
+
+
+bool existsID(string search){
+    for (int i = 0; i < customers.size(); i++){
+        if (customers[i].getID().compare(search) == 0){
+            return true;
+        }
+    }
+    return false;
+}
+
