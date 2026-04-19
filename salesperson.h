@@ -9,8 +9,8 @@ using namespace std;
 
 class Employee {
     private:
-        double gross = 0;
-        double subCommission = 0;
+        double gross = 0; 
+        double subCommission = 0; //the commission of employees reporting if such exist
         int sales = 0;
         string name;
         int employeeID, bossID;
