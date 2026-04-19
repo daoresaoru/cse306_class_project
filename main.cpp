@@ -30,7 +30,7 @@ int main() {
     ifstream transactions_file("transactions.txt", ios::in);
     ifstream rainbow_file("rainbowList.txt", ios::in);
     ifstream sales_file("salesStaff.txt", ios::in);
-    ifstream sales_output("sales_report.txt");
+    ifstream sales_output("sales_report.txt"); //used for outputting sales report
     ofstream customer("customers.txt", std::ios::app);
     ofstream order("orders.txt", std::ios::app);
     ofstream transaction("transactions.txt", std::ios::app);
@@ -44,15 +44,15 @@ int main() {
     string line_orders, line_transactions, line_customers, line_rainbow, line_sales, line; //strings used for reading from files
     string word, date; //other strings
     string first, last, id, address, city, state, zip; //variables used for customer class
-    string status, name;
+    string status, name; //strings used for salesperson class
     int quantity, eID, bID; 
     double price; 
 
-    sales_report << fixed << setprecision(2);
-    while (getline(sales_file, line_sales))
+    sales_report << fixed << setprecision(2); //only two decimals
+    while (getline(sales_file, line_sales)) //read from txt files and store into data structures
     {
-        stringstream ss(line_sales);
-        for (int i = 0; getline(ss, word, ';'); i++) {
+        stringstream ss(line_sales); //breaking down the string; loops until string ends
+        for (int i = 0; getline(ss, word, ';'); i++) { //goes through every part of the line
             switch (i)
             {
             case 0:
@@ -75,7 +75,7 @@ int main() {
             
         }
 
-        if (status == "Sales") {
+        if (status == "Sales") { //Based on the status of the employee, creates a new class object inheriting from SalesPerson base object 
             employees.push_back(new Sales(name, eID, bID));
             }
             else if (status == "SuperSales") {
@@ -98,12 +98,12 @@ int main() {
 
 
 
-    while(getline(infile, line_customers)) { //read from txt files and store into data structures
+    while(getline(infile, line_customers)) { 
         stringstream ss(line_customers);
-        for (int i=0; getline(ss, word, ';'); i++) //breaking down the string; loops until string ends
+        for (int i=0; getline(ss, word, ';'); i++) 
             {
                 
-                switch (i) //goes through every part of the line
+                switch (i) 
                 {
                 case 0:
                     id = word;
@@ -138,7 +138,7 @@ int main() {
                     cID = word;
                     break;
                 case 1:
-                    eID = stoi(word); 
+                    eID = stoi(word); //eID = employeeID
                     break;
                 case 2:
                     oID = word; 
@@ -176,7 +176,7 @@ int main() {
             }
                 cID = transactions[oID].getcustomerID();
                 eID = transactions[oID].getemployeeID();
-                for (int i = 0; i < employees.size(); i++) {
+                for (int i = 0; i < employees.size(); i++) { //adds the amount of items sold and income to an employee based on the employeeID
                     if (eID == employees[i]->geteID()) {
                         employees[i]->addIncome(price);
                         employees[i]->addSales(quantity);
@@ -187,7 +187,7 @@ int main() {
             orders.push_back(Order(oID, cID, quantity, price));
     }
 
-    for (int i = 0; i < employees.size(); i++) {
+    for (int i = 0; i < employees.size(); i++) { //creates an hierarchy of employees
                     bID = employees[i]->getbID();
                     for (int j = 0; j < employees.size(); j++) {
                         if (employees[j]->geteID() == bID) {
@@ -203,7 +203,7 @@ int main() {
         }    
         
 
-    for (int i = 0; i < employees.size(); i++) {
+    for (int i = 0; i < employees.size(); i++) { //creates a sales report txt
         sales_report << employees[i]->getName() << ";" << employees[i]->getSales() << ";" << employees[i]->getCommission() << endl;
     }
     sales_report.close();
@@ -386,7 +386,7 @@ int main() {
                         cout << "Please, enter one of the valid options:\n"; //validation
                 } } while (sub_option != '1' && sub_option != '2' && sub_option != '0');
                 break;
-            case '5':
+            case '5': //outputs the sales report
                 while (getline(sales_output, line)) {
                     cout << line << endl;
                 }
