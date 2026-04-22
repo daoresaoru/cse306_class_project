@@ -283,13 +283,11 @@ int main() {
                     else if (searchChoice == 2){
                         cout << "Enter the ID: ";
                         cin >> search_id;
-                        for (int i = 0; i < customers.size(); i++){
-                            if (customers[i].getID() == search_id){
-                            customers[i].print(); //output customer with ID if found
-                            }
-                            else if (i == customers.size() - 1){
-                                cout<< "Customer with ID " << search_id << " not found.\n";
-                            }
+                        if (existsID(search_id)){
+                            withID(search_id).print();
+                        }
+                        else{
+                            cout << "No cusomter found with ID " << search_id << endl;
                         }
                     }
                     else if (searchChoice != 0){
