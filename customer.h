@@ -16,6 +16,7 @@ class Customer {
         string city;
         string state;
         string zip;
+        string encodedpw;
     public:
         Customer() {
             ID = "";
@@ -27,8 +28,9 @@ class Customer {
             zip = "";
         }
 
-        Customer (string id, string first, string last, string a, string c, string s, string z){
+        Customer (string id, string pw, string first, string last, string a, string c, string s, string z){
         	ID = id;
+            encodedpw = pw;
         	first_name = first;
         	last_name = last;
         	address = a;
@@ -45,6 +47,9 @@ class Customer {
         void setCity(string newCity);
         void setState(string newState);
         void setZIP(string newZIP);
+        void setPassword(string newPassword){
+            encodedpw = newPassword;
+        }
 
         string getID() {
             return ID;
@@ -74,12 +79,18 @@ class Customer {
             return zip;
         }
 
+        string getPassword(){
+            return encodedpw;
+        }
+
         void print(){
             cout << ID << "; " << first_name << "; " << last_name << "; " << address << "; " << city << "; " << state << "; " << zip << endl;
         }
 
         string write(){
             string text = ID;
+            text.append(";");
+            text.append(encodedpw);
             text.append(";");
             text.append(first_name);
             text.append(";");
