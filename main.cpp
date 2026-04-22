@@ -363,7 +363,7 @@ int main() {
                         break;
                         
                     case '2': {
-                            cout << "Rainbow Tribble sold to " << withID(rainbows.back().getID()).getFirstName << " " << withID(rainbows.back().getID()).getLastName;
+                            cout << "Rainbow Tribble sold to " << withID(rainbows.back().getID()).getFirstName() << " " << withID(rainbows.back().getID()).getLastName();
                             rainbows.pop_back();
                             /*for (int i=0; i<rainbows.size(); i++) {
                                 cout << "\n" << rainbows[i].getID() << endl;
