@@ -352,6 +352,7 @@ int main() {
                 cout << "Please choose what you want to do with a Rainbow Tribble:\n";
                 cout << "1 for adding a person;\n2 for selling a Rainbow Tribble to the next person\n";
                 cin >> sub_option;
+                ofstream rainbow_two("rainbowList.txt");
                 switch(sub_option) {
                     case '1':
                         cout << "Please enter the customer ID:\n";
