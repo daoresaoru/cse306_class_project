@@ -21,7 +21,9 @@ vector<Customer> searchList; // used for creating a menu of search results
 map<string, Transaction> transactions;
 vector<Rainbow> rainbows;
 vector<Employee*> employees;
+
 bool existsID(string search); //function to check if an ID already exists
+Customer withID(string search); //function that returns the customer with a given ID
 
 
 int main() {
@@ -360,24 +362,19 @@ int main() {
                         break;
                         
                     case '2': {
-                    cout << "Please enter your customer ID: ";
-                        cin >> id;
-                        for (int i=0; i<rainbows.size(); i++) {
-                            if (rainbows[i].getID() == id) { //gets rid of a Rainbow object based on the inputted ID
-                                rainbows.erase(rainbows.begin() + i);
-                                break;
+                            cout << "Rainbow Tribble sold to " << withID(rainbows.back().getID()).getFirstName << " " << withID(rainbows.back().getID()).getLastName;
+                            rainbows.pop_back();
+                            /*for (int i=0; i<rainbows.size(); i++) {
+                                cout << "\n" << rainbows[i].getID() << endl;
                             }
-                        for (int i=0; i<rainbows.size(); i++) {
-                            cout << "\n" << rainbows[i].getID() << endl;
-                        }
+                            */    
+                            }
                             
-                        }
-                        ofstream rainbow_two("rainbowList.txt");
-                        for (int i=0; i<rainbows.size(); i++) {
-                            rainbow_two << rainbows[i].getID() << endl;
-                        }
-                        rainbow_two.close();
-                        break; }
+                            for (int i=0; i<rainbows.size(); i++) {
+                                rainbow_two << rainbows[i].getID() << endl;
+                            }
+                            rainbow_two.close();
+                            break;    
                         
                         
                         
@@ -411,3 +408,10 @@ bool existsID(string search){
     return false;
 }
 
+Customer withID(string search){
+    for (int i = 0; i < customers.size(); i++){
+        if (customers[i].getID().compare(search) == 0){
+            return customers[i];
+        }
+    }
+}
