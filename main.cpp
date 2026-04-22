@@ -15,6 +15,8 @@
 #include "salesperson.h"
 using namespace std;
 
+const string cipherorder = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
 vector<Order> orders;
 vector<Customer> customers;
 vector<Customer> searchList; // used for creating a menu of search results
@@ -23,8 +25,10 @@ vector<Rainbow> rainbows;
 vector<Employee*> employees;
 
 bool existsID(string search); //function to check if an ID already exists
-Customer withID(string search); //function that returns the customer with a given ID
-
+Customer * withID(string search); //function that returns the customer with a given ID
+string encode(string unencoded); //function to encode a password using the Ceasar cipher
+string decode(string encoded); //ctuntion to undo the encoding
+bool passwordMatch(string checkid, string checkpw);
 
 int main() {
     ifstream infile("customers.txt", ios::in); 
@@ -38,15 +42,16 @@ int main() {
     ofstream transaction("transactions.txt", std::ios::app);
     ofstream rainbow("rainbowList.txt", std::ios::app);
     ofstream sales_report("sales_report.txt");
-
+    
     char option, sub_option; //these are for menu and Rainbow Tribble sub-menu
     string last_name; //used for searching by last name 
     string search_id; // used for searching by ID
     string cID, oID; //customerID and orderID
     string line_orders, line_transactions, line_customers, line_rainbow, line_sales, line; //strings used for reading from files
     string word, date; //other strings
-    string first, last, id, address, city, state, zip; //variables used for customer class
+    string first, last, id, address, city, state, zip, password; //variables used for customer class
     string status, name; //strings used for salesperson class
+    Customer *customerptr; //used for setting a customer to something
     int quantity, eID, bID; 
     double price; 
 
@@ -111,21 +116,23 @@ int main() {
                     id = word;
                     break;
                 case 1:
+                    password = word;
+                case 2:
                     first = word; 
                     break;
-                case 2:
-                    last = word;
                 case 3:
-                    address = word;
+                    last = word;
                 case 4:
-                    city = word;
+                    address = word;
                 case 5:
-                    state = word;
+                    city = word;
                 case 6:
+                    state = word;
+                case 7:
                     zip = word;
                 } 
             }
-            customers.push_back(Customer(id, first, last, address, city, state, zip)); //create a vector of Customer objects
+            customers.push_back(Customer(id, password, first, last, address, city, state, zip)); //create a vector of Customer objects
     }
 
 
@@ -213,12 +220,12 @@ int main() {
      
     
 
-
-
+    
     cout << "Welcome to the business assisting program!\n\nPlease choose from one of the following options:\n";
     do {
-        cout << "1 for adding a customer\n2 for looking up a customer by last name\n3 for placing an order\n";
-        cout << "4 for managing Rainbow Tribble orders\n5 for outputting the sales report\n6 for exiting the program\n";
+        cout << "1 for adding a customer\n2 for looking up a customer\n3 for placing an order\n";
+        cout << "4 for managing Rainbow Tribble orders\n5 for outputting the sales report\n";
+        cout << "6 for Customer Portal\n7 for exiting the program\n";
         cout << "Enter your option here: ";
         cin >> option;
         cout << endl;
@@ -244,7 +251,7 @@ int main() {
                 cout << "Enter the ZIP code of the customer: ";
                 cin >> zip;
 
-                customers.push_back(Customer(id, first, last, address, city, state, zip));
+                customers.push_back(Customer(id, "wuleeohv", first, last, address, city, state, zip));
                 
                 
                 customer << "\n" << customers[customers.size()-1].write();
@@ -281,13 +288,14 @@ int main() {
                         }
                     }
                     else if (searchChoice == 2){
-                        for (int i = 0; i < customers.size(); i++){
-                            if (customers[i].getID() == search_id){
-                            customers[i].print(); //output customer with ID if found
-                            }
-                            else if (i == customers.size() - 1){
-                                cout<< "No customer found with ID " << search_id << endl;
-                            }
+                        cout << "Enter the ID: ";
+                        cin >> search_id;
+                        if (existsID(search_id)){
+                            (*withID(search_id)).print();
+                        }
+                        else{
+                            cout << "No cusomter found with ID " << search_id << endl;
+                        }
                     }
                     else if (searchChoice != 0){
                         cout << "Invalid entry\n";
@@ -346,21 +354,22 @@ int main() {
                 break;
             case '4':
                 do {
-                cout << "Please choose what you want to do with a Rainbow Tribble:\n";
-                cout << "1 for adding a person;\n2 for selling a Rainbow Tribble to the next person\n";
-                cin >> sub_option;
-                ofstream rainbow_two("rainbowList.txt");
-                switch(sub_option) {
-                    case '1':
-                        cout << "Please enter the customer ID:\n";
-                        cin >> id;
-                        rainbows.push_back(Rainbow(id)); //adds a new Rainbow object to a vector
-                        rainbow << rainbows[rainbows.size() - 1].getID();
-                        rainbow.close();
-                        break;
-                        
-                    case '2': {
-                            cout << "Rainbow Tribble sold to " << withID(rainbows.back().getID()).getFirstName() << " " << withID(rainbows.back().getID()).getLastName();
+                    cout << "Please choose what you want to do with a Rainbow Tribble:\n";
+                    cout << "1 for adding a person;\n2 for selling a Rainbow Tribble to the next person\n";
+                    cin >> sub_option;
+                    ofstream rainbow_two("rainbowList.txt");
+                    switch(sub_option) {
+                        case '1':
+                            cout << "Please enter the customer ID:\n";
+                            cin >> id;
+                            rainbows.push_back(Rainbow(id)); //adds a new Rainbow object to a vector
+                            rainbow << rainbows[rainbows.size() - 1].getID();
+                            rainbow.close();
+                            break;
+                            
+                        case '2': {
+                            customerptr = (withID(rainbows.back().getID()));
+                            cout << "Rainbow Tribble sold to " << (*customerptr).getFirstName() << " " << (*customerptr).getLastName() << endl;
                             rainbows.pop_back();
                             /*for (int i=0; i<rainbows.size(); i++) {
                                 cout << "\n" << rainbows[i].getID() << endl;
@@ -373,21 +382,66 @@ int main() {
                             }
                             rainbow_two.close();
                             break;    
-                        
-                        
-                        
-                        
-                    default:
-                        cout << "Please, enter one of the valid options:\n"; //validation
-                } } while (sub_option != '1' && sub_option != '2' && sub_option != '0');
+                        default:
+                            cout << "Please, enter one of the valid options:\n"; //validation
+                    } }while (sub_option != '1' && sub_option != '2' && sub_option != '0');
                 break;
             case '5': //outputs the sales report
                 while (getline(sales_output, line)) {
                     cout << line << endl;
                 }
                 sales_output.close();
+                break;
             case '6':
+                while (id != "000000"){
+                    cout << "Enter your user ID (\"000000\" to exit): ";
+                    cin >> id;
+                    if (id.compare("000000") != 0){
+                        cout << "Enter your password: ";
+                        cin >> password;
+                        if (existsID(id) && passwordMatch(id, password)){
+                            customerptr = (withID(id));
+                            char echoice;
+                            cout << "Welcome " << (*customerptr).getFirstName() << "!\n";
+                            while (echoice != '4'){
+                                cout << "Please choose from the from the following options:\n";
+                                cout << "1. Change password\n";
+                                cout << "2. Review order history\n";
+                                cout << "3. Place an order\n";
+                                cout << "4. Sign out\n";
+                                cin >> echoice;
+                                switch(echoice){
+                                    case '1': 
+                                        cout << "Enter your new password: ";
+                                        cin >> password;
+                                        (*customerptr).setPassword(encode(password));
+                                        cout << "Password successfully changed!\n";
+                                        break;
+
+                                    case '2':
+
+                                        break;
+
+                                    case '3':
+                                        break;
+
+                                    case '4':
+                                        break;
+
+                                    default:
+                                        cout << "Invalid entry\n\n";
+                                }
+                            }
+                        }
+                        else{
+                            cout << "No matxh for ID and password.\n\n";
+                        }
+                    }
+                }
+                break;
+            case '7':
                 return 0;
+                break;
             default:
                 cout << "Please, enter one of the valid options:\n"; //validation
         }
@@ -406,10 +460,34 @@ bool existsID(string search){
     return false;
 }
 
-Customer withID(string search){
+Customer * withID(string search){
     for (int i = 0; i < customers.size(); i++){
         if (customers[i].getID().compare(search) == 0){
-            return customers[i];
+            return &customers[i];
         }
     }
+}
+
+string encode(string unencoded){
+    string encoded = "";
+    for (int i = 0; i < unencoded.length(); i++){
+        int idx = cipherorder.find(unencoded.at(i));
+        encoded.push_back(cipherorder.at((idx + 3) % 62));
+    }
+    return encoded;
+}
+
+string decode(string encoded){
+    string decoded = "";
+    for (int i = 0; i < encoded.length(); i++){
+        int idx = cipherorder.find(encoded.at(i));
+        decoded.push_back(cipherorder.at((idx - 3) % 62));
+    }
+    return decoded;
+}
+
+bool passwordMatch(string checkid, string checkpw){
+    Customer check = *withID(checkid);
+    string idpw = decode(check.getPassword());
+    return idpw.compare(checkpw) == 0;
 }
