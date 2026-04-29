@@ -31,6 +31,9 @@ class Order {
         double getprice() {
             return price;
         }
+        void print(){
+            cout << orderID << ";" << customerID << ";" << quantity << ";" << price << endl;
+        }
 };
 
 #endif
