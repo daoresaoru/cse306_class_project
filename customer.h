@@ -84,7 +84,7 @@ class Customer {
         }
 
         void print(){
-            cout << ID << "; " << first_name << "; " << last_name << "; " << address << "; " << city << "; " << state << "; " << zip << endl;
+            cout << ID << "; " << encodedpw << "; " << first_name << "; " << last_name << "; " << address << "; " << city << "; " << state << "; " << zip << endl;
         }
 
         string write(){
