@@ -28,6 +28,7 @@ bool existsID(string search); //function to check if an ID already exists
 Customer * withID(string search); //function that returns the customer with a given ID
 string encode(string unencoded); //function to encode a password using the Ceasar cipher
 string decode(string encoded); //ctuntion to undo the encoding
+bool validPW(string pw);
 bool passwordMatch(string checkid, string checkpw);
 
 int main() {
@@ -53,7 +54,8 @@ int main() {
     string status, name; //strings used for salesperson class
     Customer *customerptr; //used for setting a customer to something
     int quantity, eID, bID; 
-    double price; 
+    double price;
+    bool valid; //used for password validation
 
     sales_report << fixed << setprecision(2); //only two decimals
     while (getline(sales_file, line_sales)) //read from txt files and store into data structures
@@ -193,7 +195,7 @@ int main() {
                     }
                 }
                 
-            orders.push_back(Order(oID, cID, quantity, price));
+            orders.push_back(Order(cID, oID, quantity, price));
     }
 
     for (int i = 0; i < employees.size(); i++) { //creates an hierarchy of employees
@@ -217,10 +219,9 @@ int main() {
     }
     sales_report.close();
     
-     
     
 
-    
+    cout << validPW("123");
     cout << "Welcome to the business assisting program!\n\nPlease choose from one of the following options:\n";
     do {
         cout << "1 for adding a customer\n2 for looking up a customer\n3 for placing an order\n";
@@ -232,7 +233,7 @@ int main() {
         switch(option)
         {
             case '1':
-                do {id = to_string(rand()%1000000);
+                do {id = to_string(rand()%999999 + 1);
                     while (id.length() < 6){
                         id = id.insert(0, "0");
                     }
@@ -251,11 +252,11 @@ int main() {
                 cout << "Enter the ZIP code of the customer: ";
                 cin >> zip;
 
-                customers.push_back(Customer(id, "wuleeohv", first, last, address, city, state, zip));
+                customers.push_back(Customer(id, "wuleeohv", first, last, address, city, state, zip)); //adds a new Customer object to a vector
                 
                 
                 customer << "\n" << customers[customers.size()-1].write();
-                customer.close(); //adds a new Customer object to a vector
+                customer.close();
                 cout << first << " " << last << " has been added.\n";
                 break;
             case '2':
@@ -311,13 +312,12 @@ int main() {
                     << "0 to go back.\n";
                     cin >> cID >> quantity;
                     if (!existsID(cID) && quantity != 0){
-                        cout << "ID not found.\n";
-                        break;
+                        cout << "\nID not found.\n";
                     }
                     if (quantity < 0 || quantity > 5){
-                        cout << "Please enter a quantity of tribbles from 0 to 5";
+                        cout << "Please enter a quantity of tribbles from 0 to 5\n";
                     }
-                } while (quantity != 0 && !existsID(cID) && (quantity < 0 || quantity > 5));
+                } while (!existsID(cID) || quantity < 0 || quantity > 5);
                 switch (quantity)
                 {
                 case 0:
@@ -337,13 +337,14 @@ int main() {
                 case 5:
                     price = 30;
                     break;
-                default:
-                    cout << "Please enter a number from 0 to 5";
-                    break;
                 }
-                if (quantity != 0){
+                if (quantity > 0){
+                    oID = to_string(stoi(oID) + 1); // incrementing oID
+                    while (oID.length() < 6){
+                        oID = oID.insert(0, "0");
+                    } // 0 padding on oID
                     cout << cID << " | " << quantity << " tribble(s) |" << " $" << price << "\n";
-                    orders.push_back(Order(oID, cID, quantity, price)); //adds a new Order object to a vector
+                    orders.push_back(Order(cID, oID, quantity, price)); //adds a new Order object to a vector
                     order << "\n" << orders[orders.size() - 1].getorderID() << ";" << orders[orders.size() - 1].getcustomerID() << ";" 
                     << orders[orders.size() - 1].getquantity() << ";" << orders[orders.size() - 1].getprice();
                     order.close();
@@ -393,16 +394,16 @@ int main() {
                 sales_output.close();
                 break;
             case '6':
-                while (id != "000000"){
+                do {
                     cout << "Enter your user ID (\"000000\" to exit): ";
                     cin >> id;
                     if (id.compare("000000") != 0){
                         cout << "Enter your password: ";
                         cin >> password;
                         if (existsID(id) && passwordMatch(id, password)){
-                            customerptr = (withID(id));
+                            customerptr = withID(id);
                             char echoice;
-                            cout << "Welcome " << (*customerptr).getFirstName() << "!\n";
+                            cout << "\nWelcome " << (*customerptr).getFirstName() << "!\n";
                             while (echoice != '4'){
                                 cout << "Please choose from the from the following options:\n";
                                 cout << "1. Change password\n";
@@ -411,18 +412,72 @@ int main() {
                                 cout << "4. Sign out\n";
                                 cin >> echoice;
                                 switch(echoice){
-                                    case '1': 
-                                        cout << "Enter your new password: ";
-                                        cin >> password;
+                                    case '1':
+                                        do{
+                                            cout << "\nEnter your new password: ";
+                                            cin >> password;
+                                            valid = validPW(password);
+                                            if (!valid){
+                                                cout << "Please only use numbers and letters.\n";
+                                            }
+                                        } while (!valid);
                                         (*customerptr).setPassword(encode(password));
                                         cout << "Password successfully changed!\n";
                                         break;
 
                                     case '2':
-
+                                        for (int i = 0; i < orders.size(); i++){
+                                            if (orders[i].getcustomerID().compare((*customerptr).getID()) == 0){
+                                                orders[i].print();
+                                            }
+                                        }
                                         break;
 
                                     case '3':
+                                        cID = (*customerptr).getID();
+                                        do {
+                                            cout << "Please enter the number of tribbles you want to buy:\n";
+                                            cout << "1 tribble - $9.50;\n2 tribbles - $16.15;\n3 tribbles - $25.88;\n4 tribbles - $28.15;\n5 tribbles - $30.00;\n"
+                                            << "0 to go back\n";
+                                            cin >> quantity;
+                                            switch (quantity){
+                                                case 0:
+                                                    break;
+                                                case 1:
+                                                    price = 9.5;
+                                                    break;
+                                                case 2:
+                                                    price = 16.15;
+                                                    break;
+                                                case 3:
+                                                    price = 25.88;
+                                                    break;
+                                                case 4:
+                                                    price = 28.15;
+                                                    break;
+                                                case 5:
+                                                    price = 30;
+                                                    break;
+                                                default:
+                                                    cout << "\nPlease enter a number from 0 to 5";
+                                                    break;
+                                            }
+                                        } while (quantity > 5 || quantity < 0);
+
+                                        if (quantity != 0){
+                                            oID = to_string(stoi(oID) + 1); // incrementing oID
+                                            while (oID.length() < 6){
+                                                oID = oID.insert(0, "0");
+                                            } // 0 padding on oID
+                                            cout << cID << " | " << quantity << " tribble(s) |" << " $" << price << "\n";
+                                            orders.push_back(Order(cID, oID, quantity, price)); //adds a new Order object to a vector
+                                            order << "\n" << orders[orders.size() - 1].getorderID() << ";" << orders[orders.size() - 1].getcustomerID() << ";" 
+                                            << orders[orders.size() - 1].getquantity() << ";" << orders[orders.size() - 1].getprice();
+                                            order.close();
+                                            transactions[oID] = Transaction(cID, oID, eID); //add a new Transaction object to a map
+                                            transaction << "\n" << transactions[oID].getcustomerID() << ";" << transactions[oID].getorderID();
+                                            transaction.close(); 
+                                        }
                                         break;
 
                                     case '4':
@@ -434,10 +489,10 @@ int main() {
                             }
                         }
                         else{
-                            cout << "No matxh for ID and password.\n\n";
+                            cout << "No match for ID and password.\n\n";
                         }
                     }
-                }
+                } while (id != "000000");
                 break;
             case '7':
                 return 0;
@@ -484,6 +539,16 @@ string decode(string encoded){
         decoded.push_back(cipherorder.at((idx - 3) % 62));
     }
     return decoded;
+}
+
+bool validPW(string pw){
+    for (int i = 0; i < pw.length(); i++){
+        if (cipherorder.find(pw.at(i)) >= 62){
+            cout << "Invalid character: " << pw.at(i) << endl;
+            return false;
+        }
+    }
+    return true;
 }
 
 bool passwordMatch(string checkid, string checkpw){
